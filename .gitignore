@@ -1,0 +1,22 @@
+# Test files
+/ip_addresses.zip
+/ip_addresses
+test/gen/*
+!test/gen/generate.py
+!test/gen/count.sh
+
+# Test coverage output
+coverage.out
+
+# Binaries
+/naive
+/sorted-slice
+/sorted-slice-dedup
+/ip-store
+/ip-store-concurrent
+
+# Profiling data
+*.prof
+
+# Editor
+.vscode
