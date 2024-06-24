@@ -1,8 +1,8 @@
-BIN=naive sorted-slice sorted-slice-dedup ip-store-concurrent ip-store
-TEST=test-naive test-sorted-slice test-sorted-slice-dedup test-ip-store-concurrent-cmd test-ip-store-cmd test-ip-store-pkg
+BIN=naive sorted-slice sorted-slice-dedup ip-store-concurrent ip-store ip-store-v2
+TEST=test-naive test-sorted-slice test-sorted-slice-dedup test-ip-store-concurrent-cmd test-ip-store-cmd test-ip-store-pkg test-ip-store-v2-cmd test-ip-store-v2-pkg
 
 .PHONY: all
-all: $(BIN)
+all: $(TEST) $(BIN)
 
 .PHONY: clean
 clean:
@@ -15,9 +15,17 @@ test: $(TEST)
 test-ip-store-cmd:
 	go test github.com/rdzhaafar/ip-addr-counter/cmd/ip-store
 
+.PHONY: test-ip-store-v2
+test-ip-store-v2-cmd:
+	go test github.com/rdzhaafar/ip-addr-counter/cmd/ip-store-v2
+
 .PHONY: test-ip-store-pkg
 test-ip-store-pkg:
-	go test github.com/rdzhaafar/ip-addr-counter/pkg/ipstore
+	go test github.com/rdzhaafar/ip-addr-counter/pkg/ipstore/v1
+
+.PHONY: test-ip-store-v2-pkg
+test-ip-store-v2-pkg:
+	go test github.com/rdzhaafar/ip-addr-counter/pkg/ipstore/v2
 
 .PHONY: test-naive
 test-naive:
@@ -48,4 +56,7 @@ ip-store-concurrent: cmd/ip-store-concurrent/main.go
 	go build -o $@ $?
 
 ip-store: cmd/ip-store/main.go
+	go build -o $@ $?
+
+ip-store-v2: cmd/ip-store-v2/main.go
 	go build -o $@ $?

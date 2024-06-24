@@ -12,7 +12,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/rdzhaafar/ip-addr-counter/pkg/ipstore"
+	"github.com/rdzhaafar/ip-addr-counter/pkg/ipstore/v1"
 )
 
 var (

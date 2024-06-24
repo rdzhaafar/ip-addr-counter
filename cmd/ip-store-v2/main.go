@@ -11,7 +11,7 @@ import (
 	"time"
 	"unsafe"
 
-	"github.com/rdzhaafar/ip-addr-counter/pkg/ipstore/v1"
+	"github.com/rdzhaafar/ip-addr-counter/pkg/ipstore/v2"
 )
 
 var (

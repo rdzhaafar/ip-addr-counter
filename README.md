@@ -1,13 +1,13 @@
 # IP-Addr-Counter
 
 > **TL;DR:** If you just want to see the final solution, go to
-> [cmd/ip-store/main.go](cmd/ip-store/main.go). Below you'll find a screenshot to prove
+> [cmd/ip-store-v2/main.go](cmd/ip-store-v2/main.go). Below you'll find a screenshot to prove
 > that this solution worked and was able to find the 1 billion unique IPv4 addresses
 > from `ip_addresses`.
 > The rest of this README explains how I arrived at that solution and what decisions/
 > optimizations I made along the way.
 
-![ip-store ip_addresses run](screenshots/ip-store-ip-addresses.png)
+![ip-store ip_addresses run](screenshots/ip-store-v2-ip-addresses.png)
 
 ## Table of contents
 
@@ -18,6 +18,7 @@
 1. [Solution 2: sorted-slice](#solution-2-sorted-slice)
 1. [Solution 3: sorted-slice-dedup](#solution-3-sorted-slice-dedup)
 1. [Solution 4: ip-store](#solution-4-ip-store)
+1. [Solution 5: ip-store-v2](#solution-5-ip-store-v2)
 1. [Failed solution: ip-store-concurrent](#failed-solution-ip-store-concurrent)
 
 ## Assumptions
@@ -155,6 +156,23 @@ bucket allocation, but most of it was allocated in `IPStore.Insert()`.
 ![ip-store cpu profile](screenshots/ip-store-cpu.png)
 
 ![ip-store heap profile](screenshots/ip-store-heap.png)
+
+## Solution 5: [ip-store-v2](cmd/ip-store-v2)
+
+I was quite content with the `IPStore` data structure, but I was still unhappy about having to allocate a slice for
+each of the `IPStore` buckets. I decided to try avoiding heap allocations by using a bitmap. Since there can be at most
+256 IPs in every `IPStore` bucket, they can all be represented with a 256-bit bitmap (4 `uint64`s). I changed
+the implementation of `IPStore`, but left the driver code unchanged. The results were quite impressive -- 
+CPU time was cut more than twice (~15m vs ~6m), and memory usage went down almost 5 times (~7GB vs ~1.5GB).
+CPU profile shows that now almost all of the time was spent reading the file from disk. Heap profile revealed that
+almost all memory was allocated during `IPStore` creation, and there were almost no heap allocations after that
+was done. 
+
+![ip-store-v2 ip_addresses run](screenshots/ip-store-v2-ip-addresses.png)
+
+![ip-store-v2 cpu](screenshots/ip-store-v2-cpu.png)
+
+![ip-store-v2 heap](screenshots/ip-store-v2-heap.png)
 
 ## Failed solution: [ip-store-concurrent](cmd/ip-store-concurrent/main.go)
 
